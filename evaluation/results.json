@@ -1,0 +1,615 @@
+{
+  "timestamp": "2026-09-26T15:33:29+00:00",
+  "analyzer_version": "0.1.0",
+  "metadata": {
+    "evaluator_version": "1.0.0",
+    "deterministic_runs": true,
+    "network_disabled_runs": true,
+    "python_version": "3.14.6",
+    "packages": {
+      "fastapi": "0.141.1",
+      "opencv-python-headless": "5.0.0.93",
+      "numpy": "2.5.1",
+      "httpx": "0.28.1",
+      "qrcode": "8.2",
+      "pillow": "12.3.0",
+      "pytest": "9.1.1"
+    },
+    "case_count": 128,
+    "case_distribution": {
+      "by_input_type": {
+        "url": 107,
+        "upi": 15,
+        "qr_url": 2,
+        "qr_upi": 2,
+        "qr_text": 1,
+        "qr_bad": 1
+      },
+      "by_expected_class": {
+        "SAFE": 74,
+        "SUSPICIOUS": 49,
+        "HIGH_RISK": 4,
+        "DECODE_ERROR": 1
+      }
+    }
+  },
+  "summary": {
+    "cases": 128,
+    "passed": 104,
+    "failed": 24
+  },
+  "detection_metrics": {
+    "detection_rate": 0.5849056603773585,
+    "false_positive_rate": 0.02702702702702703,
+    "precision": 0.9393939393939394,
+    "recall": 0.5849056603773585,
+    "true_positives": 31,
+    "true_negatives": 72,
+    "false_positives": 2,
+    "false_negatives": 22,
+    "positive_class": "expected SUSPICIOUS or HIGH_RISK"
+  },
+  "confusion_matrix": {
+    "positive_class": "expected SUSPICIOUS or HIGH_RISK",
+    "predicted_positive": "analyzer YELLOW or RED",
+    "true_positives": 31,
+    "false_negatives": 22,
+    "false_positives": 2,
+    "true_negatives": 72
+  },
+  "risk_distribution": {
+    "GREEN": 93,
+    "YELLOW": 29,
+    "RED": 4,
+    "unscored": 2
+  },
+  "categories": {
+    "benign": {
+      "cases": 70,
+      "passed": 63,
+      "failed": 7
+    },
+    "phishing_lure": {
+      "cases": 8,
+      "passed": 3,
+      "failed": 5
+    },
+    "ip_host": {
+      "cases": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    "credential_phishing": {
+      "cases": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "suspicious": {
+      "cases": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "malware_delivery": {
+      "cases": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "brand_impersonation": {
+      "cases": 21,
+      "passed": 13,
+      "failed": 8
+    },
+    "suspicious_redirect": {
+      "cases": 2,
+      "passed": 1,
+      "failed": 1
+    },
+    "normal": {
+      "cases": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    "invalid_payee": {
+      "cases": 4,
+      "passed": 4,
+      "failed": 0
+    },
+    "impersonation_scam": {
+      "cases": 3,
+      "passed": 3,
+      "failed": 0
+    },
+    "pressure_tactic": {
+      "cases": 2,
+      "passed": 1,
+      "failed": 1
+    },
+    "reward_lure": {
+      "cases": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "suspicious_payment": {
+      "cases": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "plain_text": {
+      "cases": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "decode_error": {
+      "cases": 1,
+      "passed": 1,
+      "failed": 0
+    }
+  },
+  "failed_cases": [
+    {
+      "id": "u06",
+      "name": "HTTP login page",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "phishing_lure",
+      "actual_category": "benign",
+      "score": 18,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL uses plain HTTP instead of HTTPS; credentials or payments on such pages can be intercepted.",
+        "URL contains lure keywords (login) often used in phishing lures (fake login/verify/payment pages)."
+      ],
+      "detected_indicators": [
+        "no_tls",
+        "suspicious_keywords"
+      ],
+      "error": null
+    },
+    {
+      "id": "u09",
+      "name": "Unusual HTTPS port",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "suspicious",
+      "actual_category": "benign",
+      "score": 23,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL uses unusual port 8080; phishing kits and malware often hide on non-standard ports.",
+        "URL contains lure keywords (login) often used in phishing lures (fake login/verify/payment pages)."
+      ],
+      "detected_indicators": [
+        "unusual_port",
+        "suspicious_keywords"
+      ],
+      "error": null
+    },
+    {
+      "id": "u12",
+      "name": "Hyphenated lure domain",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "phishing_lure",
+      "actual_category": "benign",
+      "score": 26,
+      "risk_level": "GREEN",
+      "reasons": [
+        "Hostname contains 4 hyphens; excessive hyphens are typical of look-alike domains.",
+        "URL contains lure keywords (login, secure, update) often used in phishing lures (fake login/verify/payment pages)."
+      ],
+      "detected_indicators": [
+        "suspicious_chars",
+        "suspicious_keywords"
+      ],
+      "error": null
+    },
+    {
+      "id": "u16",
+      "name": "URL shortener only",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "suspicious_redirect",
+      "actual_category": "suspicious_redirect",
+      "score": 10,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL uses a link shortener, which hides the final destination."
+      ],
+      "detected_indicators": [
+        "url_shortener"
+      ],
+      "error": null
+    },
+    {
+      "id": "u19",
+      "name": "KYC lure over HTTP",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "phishing_lure",
+      "actual_category": "benign",
+      "score": 26,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL uses plain HTTP instead of HTTPS; credentials or payments on such pages can be intercepted.",
+        "URL contains lure keywords (account, kyc, verify) often used in phishing lures (fake login/verify/payment pages)."
+      ],
+      "detected_indicators": [
+        "no_tls",
+        "suspicious_keywords"
+      ],
+      "error": null
+    },
+    {
+      "id": "u20",
+      "name": "Prize urgency lure",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "phishing_lure",
+      "actual_category": "benign",
+      "score": 26,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL uses plain HTTP instead of HTTPS; credentials or payments on such pages can be intercepted.",
+        "URL contains lure keywords (prize, urgent) often used in phishing lures (fake login/verify/payment pages)."
+      ],
+      "detected_indicators": [
+        "no_tls",
+        "suspicious_keywords"
+      ],
+      "error": null
+    },
+    {
+      "id": "u23",
+      "name": "Deep legitimate-style subdomains",
+      "input_type": "url",
+      "expected_class": "SAFE",
+      "actual_class": "SUSPICIOUS",
+      "expected_category": "phishing_lure",
+      "actual_category": "phishing_lure",
+      "score": 31,
+      "risk_level": "YELLOW",
+      "reasons": [
+        "Hostname has 5 labels (many subdomains), often used to fake a trusted domain.",
+        "URL contains lure keywords (account, login, secure, verify) often used in phishing lures (fake login/verify/payment pages)."
+      ],
+      "detected_indicators": [
+        "excessive_subdomains",
+        "suspicious_keywords"
+      ],
+      "error": null
+    },
+    {
+      "id": "p10",
+      "name": "Pure urgency pressure",
+      "input_type": "upi",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "pressure_tactic",
+      "actual_category": "pressure_tactic",
+      "score": 15,
+      "risk_level": "GREEN",
+      "reasons": [
+        "Payment text pressures quick action (immediately); scammers manufacture urgency."
+      ],
+      "detected_indicators": [
+        "urgency_language"
+      ],
+      "error": null
+    },
+    {
+      "id": "p12",
+      "name": "Garbled amount",
+      "input_type": "upi",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "suspicious_payment",
+      "actual_category": "normal",
+      "score": 15,
+      "risk_level": "GREEN",
+      "reasons": [
+        "Amount '12abc' is not a valid positive number; odd amount formatting is used to confuse payers."
+      ],
+      "detected_indicators": [
+        "bad_amount"
+      ],
+      "error": null
+    },
+    {
+      "id": "t01",
+      "name": "Amazon digit typosquat",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "brand_impersonation",
+      "actual_category": "brand_impersonation",
+      "score": 28,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL contains lure keywords (login) often used in phishing lures (fake login/verify/payment pages).",
+        "Hostname uses 'amaz0n', a close look-alike of 'amazon' (official domain: amazon.com); likely brand impersonation."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords",
+        "brand_impersonation"
+      ],
+      "error": null
+    },
+    {
+      "id": "t02",
+      "name": "Microsoft digit typosquat",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "brand_impersonation",
+      "actual_category": "brand_impersonation",
+      "score": 28,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL contains lure keywords (verify) often used in phishing lures (fake login/verify/payment pages).",
+        "Hostname uses 'micros0ft', a close look-alike of 'microsoft' (official domain: microsoft.com); likely brand impersonation."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords",
+        "brand_impersonation"
+      ],
+      "error": null
+    },
+    {
+      "id": "t03",
+      "name": "Facebook doubled-letter typosquat",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "brand_impersonation",
+      "actual_category": "brand_impersonation",
+      "score": 20,
+      "risk_level": "GREEN",
+      "reasons": [
+        "Hostname uses 'faceboook', a close look-alike of 'facebook' (official domain: facebook.com); likely brand impersonation."
+      ],
+      "detected_indicators": [
+        "brand_impersonation"
+      ],
+      "error": null
+    },
+    {
+      "id": "t04",
+      "name": "Apple digit typosquat",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "brand_impersonation",
+      "actual_category": "brand_impersonation",
+      "score": 20,
+      "risk_level": "GREEN",
+      "reasons": [
+        "Hostname uses 'appl3', a close look-alike of 'apple' (official domain: apple.com); likely brand impersonation."
+      ],
+      "detected_indicators": [
+        "brand_impersonation"
+      ],
+      "error": null
+    },
+    {
+      "id": "t06",
+      "name": "WhatsApp dropped-letter typosquat",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "brand_impersonation",
+      "actual_category": "brand_impersonation",
+      "score": 28,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL contains lure keywords (login) often used in phishing lures (fake login/verify/payment pages).",
+        "Hostname uses 'whatsap', a close look-alike of 'whatsapp' (official domain: whatsapp.com); likely brand impersonation."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords",
+        "brand_impersonation"
+      ],
+      "error": null
+    },
+    {
+      "id": "t07",
+      "name": "Instagram transposed typosquat",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "benign",
+      "actual_category": "benign",
+      "score": 0,
+      "risk_level": "GREEN",
+      "reasons": [
+        "No phishing indicators detected in static analysis."
+      ],
+      "detected_indicators": [],
+      "error": null
+    },
+    {
+      "id": "t08",
+      "name": "Outlook dropped-letter typosquat",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "brand_impersonation",
+      "actual_category": "brand_impersonation",
+      "score": 28,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL contains lure keywords (verify) often used in phishing lures (fake login/verify/payment pages).",
+        "Hostname uses 'outlok', a close look-alike of 'outlook' (official domain: microsoft.com); likely brand impersonation."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords",
+        "brand_impersonation"
+      ],
+      "error": null
+    },
+    {
+      "id": "t09",
+      "name": "Gmail transposed typosquat",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "benign",
+      "actual_category": "benign",
+      "score": 8,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL contains lure keywords (signin) often used in phishing lures (fake login/verify/payment pages)."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords"
+      ],
+      "error": null
+    },
+    {
+      "id": "t10",
+      "name": "YouTube dropped-letter typosquat",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "benign",
+      "actual_category": "benign",
+      "score": 0,
+      "risk_level": "GREEN",
+      "reasons": [
+        "No phishing indicators detected in static analysis."
+      ],
+      "detected_indicators": [],
+      "error": null
+    },
+    {
+      "id": "t15",
+      "name": "Abused-TLD lure TK",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "benign",
+      "actual_category": "benign",
+      "score": 26,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL contains lure keywords (login, secure) often used in phishing lures (fake login/verify/payment pages).",
+        "Hostname anomaly: top-level domain '.tk' is frequently abused by scammers."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords",
+        "hostname_anomaly"
+      ],
+      "error": null
+    },
+    {
+      "id": "t16",
+      "name": "Abused-TLD lure ML",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "benign",
+      "actual_category": "benign",
+      "score": 26,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL contains lure keywords (account, verify) often used in phishing lures (fake login/verify/payment pages).",
+        "Hostname anomaly: top-level domain '.ml' is frequently abused by scammers."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords",
+        "hostname_anomaly"
+      ],
+      "error": null
+    },
+    {
+      "id": "t17",
+      "name": "Abused-TLD lure GQ",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "benign",
+      "actual_category": "benign",
+      "score": 26,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL contains lure keywords (bank, update) often used in phishing lures (fake login/verify/payment pages).",
+        "Hostname anomaly: top-level domain '.gq' is frequently abused by scammers."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords",
+        "hostname_anomaly"
+      ],
+      "error": null
+    },
+    {
+      "id": "t19",
+      "name": "Reward lure on CLICK TLD",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "benign",
+      "actual_category": "benign",
+      "score": 26,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL contains lure keywords (bonus, free) often used in phishing lures (fake login/verify/payment pages).",
+        "Hostname anomaly: top-level domain '.click' is frequently abused by scammers."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords",
+        "hostname_anomaly"
+      ],
+      "error": null
+    },
+    {
+      "id": "a05",
+      "name": "Secure store sign-in",
+      "input_type": "url",
+      "expected_class": "SAFE",
+      "actual_class": "SUSPICIOUS",
+      "expected_category": "brand_impersonation",
+      "actual_category": "brand_impersonation",
+      "score": 36,
+      "risk_level": "YELLOW",
+      "reasons": [
+        "URL contains lure keywords (secure, signin) often used in phishing lures (fake login/verify/payment pages).",
+        "Hostname uses 'amazon' but is not the official domain (amazon.com); likely brand impersonation."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords",
+        "brand_impersonation"
+      ],
+      "error": null
+    },
+    {
+      "id": "a07",
+      "name": "Cyrillic homograph subdomain",
+      "input_type": "url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": "SAFE",
+      "expected_category": "brand_impersonation",
+      "actual_category": "brand_impersonation",
+      "score": 28,
+      "risk_level": "GREEN",
+      "reasons": [
+        "URL contains lure keywords (login) often used in phishing lures (fake login/verify/payment pages).",
+        "Hostname uses 'p\u0430ypal', a close look-alike of 'paypal' (official domain: paypal.com); likely brand impersonation."
+      ],
+      "detected_indicators": [
+        "suspicious_keywords",
+        "brand_impersonation"
+      ],
+      "error": null
+    }
+  ],
+  "explainability": {
+    "with_explanations": 33,
+    "without_explanations": 0
+  },
+  "limitations": "Curated synthetic corpus (reserved .example domains, synthetic UPI handles); not a statistically representative measurement of real-world scam prevalence. Expectations encode current analyzer behavior; failures are reported as findings, never silently fixed."
+}

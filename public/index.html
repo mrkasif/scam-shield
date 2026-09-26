@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ScamShield — static URL threat scanner. Paste a suspicious link and get an instant phishing risk score." />
+  <title>ScamShield — URL Threat Scanner</title>
+  <link rel="icon" href="data:," />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="brand">
+      <svg class="brand-shield" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5l8-3z" stroke="#38e1ff" stroke-width="1.8" fill="rgba(56,225,255,0.08)"/>
+        <path d="M8.5 12l2.5 2.5 4.5-5" stroke="#22e584" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">Scam<span class="brand-accent">Shield</span></span>
+      <span class="brand-tag">INDIAN DIGITAL SCAM INTELLIGENCE &amp; PREVENTION</span>
+    </div>
+    <nav class="main-nav" aria-label="Primary">
+      <a href="#sec-scanner">Scanner</a>
+      <a href="#sec-dashboard">Dashboard</a>
+      <a href="#dash-recent">History</a>
+      <a href="#sec-eval">Evidence</a>
+      <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Toggle dark and light mode">Light</button>
+    </nav>
+    <div class="header-right">
+      <span id="sys-status" class="status-pill" role="status">Checking systems…</span>
+      <div class="header-badge" role="note">Static analysis only — links are never opened</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="kicker">Indian Digital Scam Intelligence &amp; Prevention</p>
+          <h1>Check the link<br />before you trust it.</h1>
+          <p class="sub">
+            ScamShield reads the structure of suspicious URLs, UPI requests,
+            messages and QR codes — and shows exactly why something scores the
+            way it does. Nothing is opened. Nothing is paid.
+          </p>
+          <ol class="flow-strip" aria-label="How it works">
+            <li><span class="flow-n">01</span><span class="flow-t">Input<small>Paste or upload</small></span></li>
+            <li><span class="flow-n">02</span><span class="flow-t">Analyze<small>Static inspection</small></span></li>
+            <li><span class="flow-n">03</span><span class="flow-t">Understand risk<small>Score + reasons</small></span></li>
+            <li><span class="flow-n">04</span><span class="flow-t">Take action<small>Purify, verify, report</small></span></li>
+          </ol>
+          <p class="flow-motto">Detect → Explain → Protect. No result ever guarantees safety.</p>
+        </div>
+        <aside class="console" aria-label="Live system status">
+          <p class="console-title">Live system console</p>
+          <dl class="console-list">
+            <div><dt>Scanner</dt><dd id="st-scanner">…</dd></div>
+            <div><dt>QR engine</dt><dd id="st-qr">…</dd></div>
+            <div><dt>Intel</dt><dd id="st-intel">Local</dd></div>
+            <div><dt>External</dt><dd id="st-ext">…</dd></div>
+            <div><dt>Eval corpus</dt><dd id="st-eval">…</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <section id="sec-scanner" class="scanner card hero-card" aria-labelledby="smart-heading">
+      <div class="wrap">
+      <div class="scan-head">
+        <span class="sec-index" aria-hidden="true">01</span>
+        <div class="scan-head-text">
+          <h2 id="smart-heading">Smart Scanner</h2>
+          <p class="sub">
+            Analyze suspicious URLs, payment addresses, messages, and QR codes
+            without opening the destination.
+          </p>
+        </div>
+      </div>
+      <div class="scan-cols">
+      <form id="ss-form" novalidate>
+        <label class="input-label" for="ss-input">URL, UPI URI, or plain text</label>
+        <div class="scan-line">
+          <input
+            id="ss-input"
+            name="input"
+            type="text"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="https://example.com/verify  or  upi://pay?pa=shop@bank&am=100"
+            aria-describedby="ss-error"
+          />
+          <button id="ss-scan-btn" type="submit">
+            <span class="btn-text">Scan</span>
+          </button>
+        </div>
+        <div class="ss-row">
+          <label class="ss-file-label" for="ss-file">…or drop / choose a QR image (PNG/JPEG)</label>
+          <input id="ss-file" name="file" type="file" accept="image/*" aria-describedby="ss-error" />
+        </div>
+        <div class="ss-preview-wrap">
+          <img id="ss-preview" class="qr-preview" hidden alt="Preview of the selected QR code image" />
+        </div>
+        <div class="ss-actions">
+          <button id="ss-clear-btn" type="button" class="ghost-btn">Clear</button>
+        </div>
+        <p id="ss-error" class="form-error" role="alert" hidden></p>
+      </form>
+      <aside class="scan-rail" aria-label="How routing works">
+        <p class="rail-title">How routing works</p>
+        <ul class="rail-list">
+          <li><strong>URL</strong><span>→ URL analyzer</span></li>
+          <li><strong>UPI</strong><span>→ UPI analyzer</span></li>
+          <li><strong>QR</strong><span>→ decode, then URL / UPI analyzer</span></li>
+          <li><strong>Text</strong><span>→ no score, read critically</span></li>
+        </ul>
+        <p class="rail-limits">Limits: 4 KB text · 10 MB images. Static only.</p>
+      </aside>
+      </div>
+
+      <div id="ss-loading" class="loading" hidden aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="ss-loading-text">Detecting input and scanning…</p>
+      </div>
+
+      <div id="ss-result" class="result" hidden aria-live="polite">
+        <p class="category">Detected input: <span id="ss-type" class="type-badge">—</span></p>
+
+        <div id="ss-payload-wrap" hidden>
+          <h3>Decoded content</h3>
+          <code id="ss-payload" class="normalized"></code>
+        </div>
+
+        <div id="ss-score-wrap" class="verdict-grid">
+          <div class="verdict-col">
+          <div class="score-block">
+            <div id="ss-score-ring" class="score-ring" data-level="GREEN">
+              <span id="ss-score-value" class="score-value">0</span>
+              <span class="score-max">/100</span>
+            </div>
+            <div class="score-meta">
+              <span id="ss-risk-badge" class="risk-badge">GREEN</span>
+              <p class="category">Category: <strong id="ss-category">—</strong></p>
+              <h3 class="action-heading">Recommended action</h3>
+              <p id="ss-recommendation" class="recommendation"></p>
+            </div>
+          </div>
+          </div>
+          <div class="detail-col">
+          <h3>Why was this flagged?</h3>
+          <ul id="ss-reasons" class="reasons"></ul>
+          <h3>Technical indicators</h3>
+          <div id="ss-indicators" class="chips"></div>
+          <div id="ss-upi-wrap" hidden>
+            <h3>Payment information</h3>
+            <dl id="ss-upi-components" class="upi-details components"></dl>
+          </div>
+          </div>
+        </div>
+
+        <div id="ss-note-wrap" hidden>
+          <p id="ss-note" class="recommendation"></p>
+        </div>
+
+        <div id="ss-intel-block" hidden>
+          <h3>Threat intelligence</h3>
+          <p class="not-opened" role="note">Threat intelligence is evidence only — it does not change the score above.</p>
+          <dl id="ss-intel-list" class="upi-details components"></dl>
+        </div>
+
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <section id="sec-dashboard" class="scanner card" aria-labelledby="dash-heading">
+      <div class="wrap">
+      <h2 id="dash-heading">Security Dashboard</h2>
+      <p class="sub">
+        History stores limited scan metadata and sanitized previews only —
+        never passwords, payment credentials, QR image files, or full query
+        values. <span id="dash-persistence" class="qr-class"></span>
+      </p>
+
+      <div class="dash-cards">
+        <div class="dash-card"><span class="dash-num" id="dash-total">0</span><span class="dash-label">Total Scans</span></div>
+        <div class="dash-card"><span class="dash-num" id="dash-threats">0</span><span class="dash-label">Threats Detected</span></div>
+        <div class="dash-card"><span class="dash-num" id="dash-safe">0</span><span class="dash-label">Low-Risk Scans</span></div>
+        <div class="dash-card"><span class="dash-num" id="dash-high">0</span><span class="dash-label">High Risk Scans</span></div>
+      </div>
+
+      <div class="result-grid">
+        <div>
+          <h3>Risk distribution</h3>
+          <div id="dash-risk" class="dist"></div>
+        </div>
+        <div>
+          <h3>Input distribution</h3>
+          <div id="dash-types" class="dist"></div>
+        </div>
+      </div>
+
+      <h3 id="dash-recent">Recent scans</h3>
+      <p id="dash-empty" class="qr-class" hidden>No scans recorded yet — run a Smart Scan above.</p>
+      <div class="table-wrap">
+        <table id="dash-table" class="dash-table">
+          <thead>
+            <tr><th scope="col">Time</th><th scope="col">Type</th><th scope="col">Risk</th><th scope="col">Score</th><th scope="col">Category</th></tr>
+          </thead>
+          <tbody id="dash-rows"></tbody>
+        </table>
+      </div>
+      <div id="dash-detail" class="dash-detail" hidden>
+        <h3>Scan detail</h3>
+        <dl id="dash-detail-list" class="upi-details components"></dl>
+      </div>
+
+      <div class="ss-actions">
+        <button id="dash-refresh-btn" type="button" class="ghost-btn">Refresh</button>
+        <button id="dash-clear-btn" type="button" class="ghost-btn danger">Clear History</button>
+      </div>
+      <p id="dash-error" class="form-error" role="alert" hidden></p>
+      </div>
+    </section>
+
+    <section id="sec-url" class="scanner card bandflat" aria-labelledby="scan-heading">
+      <h2 id="scan-heading" class="visually-hidden">Scan a URL</h2>
+      <form id="scan-form" novalidate>
+        <label class="input-label" for="url-input">Suspicious URL</label>
+        <div class="input-row">
+          <input
+            id="url-input"
+            name="url"
+            type="url"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="https://example.com/verify-account"
+            required
+            aria-describedby="form-error"
+          />
+          <button id="scan-btn" type="submit">
+            <span class="btn-text">Scan</span>
+          </button>
+        </div>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+      </form>
+
+      <div id="loading" class="loading" hidden aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Analyzing URL structure…</p>
+      </div>
+
+      <div id="result" class="result" hidden aria-live="polite">
+        <div class="score-block">
+          <div id="score-ring" class="score-ring" data-level="GREEN">
+            <span id="score-value" class="score-value">0</span>
+            <span class="score-max">/100</span>
+          </div>
+          <div class="score-meta">
+            <span id="risk-badge" class="risk-badge">GREEN</span>
+            <p class="category">Category: <strong id="category">—</strong></p>
+            <p id="recommendation" class="recommendation"></p>
+          </div>
+        </div>
+
+        <div class="result-grid">
+          <div>
+            <h3>Why this score?</h3>
+            <ul id="reasons" class="reasons"></ul>
+          </div>
+          <div>
+            <h3>Technical indicators</h3>
+            <div id="indicators" class="chips"></div>
+            <h3 class="url-heading">Normalized URL</h3>
+            <code id="normalized" class="normalized"></code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-qr" class="scanner card bandflat" aria-labelledby="qr-heading">
+      <h2 id="qr-heading">QR Code Scanner</h2>
+      <p class="sub">
+        Upload a photo or screenshot of a QR code. ScamShield decodes it
+        <strong>locally</strong> and, if it hides a link, runs the same URL
+        threat analysis — without ever opening the destination.
+        Accepts QR codes containing links, UPI payment URIs, or plain text.
+      </p>
+      <form id="qr-form" novalidate>
+        <label class="input-label" for="qr-input">QR image (PNG/JPEG — or drag &amp; drop a file onto the picker)</label>
+        <div class="input-row">
+          <input id="qr-input" name="file" type="file" accept="image/*" aria-describedby="qr-error" />
+          <button id="qr-scan-btn" type="submit">
+            <span class="btn-text">Scan QR</span>
+          </button>
+        </div>
+        <p id="qr-error" class="form-error" role="alert" hidden></p>
+      </form>
+
+      <div class="qr-preview-wrap">
+        <img id="qr-preview" class="qr-preview" hidden alt="Preview of the selected QR code image" />
+      </div>
+
+      <div id="qr-loading" class="loading" hidden aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Decoding QR code…</p>
+      </div>
+
+      <div id="qr-result" class="result" hidden aria-live="polite">
+        <p class="not-opened" role="note">⚠ The destination was NOT opened — static analysis only.</p>
+
+        <h3>Decoded content</h3>
+        <code id="qr-payload" class="normalized"></code>
+        <p class="category">Payload type: <strong id="qr-type">—</strong> <span id="qr-class" class="qr-class"></span></p>
+
+        <div id="qr-url-block" hidden>
+          <div class="score-block">
+            <div id="qr-score-ring" class="score-ring" data-level="GREEN">
+              <span id="qr-score-value" class="score-value">0</span>
+              <span class="score-max">/100</span>
+            </div>
+            <div class="score-meta">
+              <span id="qr-risk-badge" class="risk-badge">GREEN</span>
+              <p class="category">Category: <strong id="qr-category">—</strong></p>
+              <p id="qr-recommendation" class="recommendation"></p>
+            </div>
+          </div>
+          <h3>Why this score?</h3>
+          <ul id="qr-reasons" class="reasons"></ul>
+          <h3>Technical indicators</h3>
+          <div id="qr-indicators" class="chips"></div>
+        </div>
+
+        <div id="qr-note-block" hidden>
+          <p id="qr-note" class="recommendation"></p>
+          <dl id="qr-upi-details" class="upi-details" hidden></dl>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-upi" class="scanner card bandflat" aria-labelledby="upi-heading">
+      <h2 id="upi-heading">UPI Payment Analyzer</h2>
+      <p class="sub">
+        Paste a UPI payment URI (from a QR sticker or payment link) to inspect
+        the payee, amount, and scam language.
+        ScamShield performs static analysis only. It does not initiate or verify payments.
+      </p>
+      <form id="upi-form" novalidate>
+        <label class="input-label" for="upi-input">UPI URI</label>
+        <div class="input-row">
+          <input
+            id="upi-input"
+            name="upi_uri"
+            type="text"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="upi://pay?pa=merchant@bank&pn=Name&am=999&cu=INR"
+            required
+            aria-describedby="upi-error"
+          />
+          <button id="upi-btn" type="submit">
+            <span class="btn-text">Analyze</span>
+          </button>
+        </div>
+        <p id="upi-error" class="form-error" role="alert" hidden></p>
+      </form>
+
+      <div id="upi-loading" class="loading" hidden aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Analyzing payment request…</p>
+      </div>
+
+      <div id="upi-result" class="result" hidden aria-live="polite">
+        <p class="not-opened" role="note">⚠ Static analysis only — no payment was initiated or verified.</p>
+
+        <div class="result-grid">
+          <div>
+            <h3>Payment information</h3>
+            <dl id="upi-components" class="upi-details components"></dl>
+          </div>
+          <div>
+            <h3>Score</h3>
+            <div class="score-block">
+              <div id="upi-score-ring" class="score-ring" data-level="GREEN">
+                <span id="upi-score-value" class="score-value">0</span>
+                <span class="score-max">/100</span>
+              </div>
+              <div class="score-meta">
+                <span id="upi-risk-badge" class="risk-badge">GREEN</span>
+                <p class="category">Category: <strong id="upi-category">—</strong></p>
+                <p id="upi-recommendation" class="recommendation"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3>Why this score?</h3>
+        <ul id="upi-reasons" class="reasons"></ul>
+        <h3>Technical indicators</h3>
+        <div id="upi-indicators" class="chips"></div>
+      </div>
+    </section>
+
+    <section id="sec-eval" class="scanner card" aria-labelledby="eval-heading">
+      <div class="wrap">
+      <h2 id="eval-heading">Evaluation / Evidence</h2>
+      <p class="sub">
+        Offline lab results from the curated 128-case synthetic corpus
+        (see <code class="inline-code">evaluation/report.md</code>). Figures below are
+        copied from the latest verified run — they describe that corpus only,
+        never real-world accuracy.
+      </p>
+      <div class="dash-cards">
+        <div class="dash-card"><span class="dash-num">128</span><span class="dash-label">Evaluation Cases</span></div>
+        <div class="dash-card"><span class="dash-num">104/128</span><span class="dash-label">Expected Outcomes</span></div>
+        <div class="dash-card"><span class="dash-num">58.5%</span><span class="dash-label">Detection Rate</span></div>
+        <div class="dash-card"><span class="dash-num">93.9%</span><span class="dash-label">Precision</span></div>
+      </div>
+      <div class="result-grid">
+        <div>
+          <h3>Key metrics</h3>
+          <dl class="upi-details components">
+            <dt>recall</dt><dd>58.5%</dd>
+            <dt>false-positive rate</dt><dd>2.7%</dd>
+            <dt>true positives</dt><dd>31</dd>
+            <dt>true negatives</dt><dd>72</dd>
+            <dt>false positives</dt><dd>2</dd>
+            <dt>false negatives</dt><dd>22</dd>
+            <dt>explainability failures</dt><dd>0</dd>
+          </dl>
+        </div>
+        <div>
+          <h3>Known limitations</h3>
+          <ul class="reasons">
+            <li>Synthetic corpus — small set, not prevalence-representative.</li>
+            <li>Lone weak signals can score below the YELLOW threshold (22 documented misses).</li>
+            <li>Keyword-heavy legitimate subdomains can over-trigger (2 documented false alarms).</li>
+            <li>Naive registrable-domain (last-two-labels) matching in local intelligence.</li>
+            <li>External URLhaus intelligence is optional and unconfigured by default.</li>
+            <li>On Vercel serverless, history is ephemeral across cold starts.</li>
+          </ul>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <section class="zones bandflat">
+      <div class="zone zone-green"><strong>0–29 GREEN</strong><span>Minimal threat — no risk indicators in this check.</span></div>
+      <div class="zone zone-yellow"><strong>30–69 YELLOW</strong><span>Suspicious — verify before clicking.</span></div>
+      <div class="zone zone-red"><strong>70–100 RED</strong><span>Dangerous — do not visit.</span></div>
+    </section>
+
+    <footer class="footer">
+      <p>ScamShield performs local static analysis. It never opens the link. When in doubt, don't click.</p>
+    </footer>
+  </main>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
+
