@@ -220,3 +220,12 @@ def test_vercel_config_valid():
     )
     assert config["outputDirectory"] == "public"
     assert any("api" in str(r) for r in config["rewrites"])
+    # Python version comes from .python-version, not a functions.runtime
+    # entry (an unknown runtime string fails deploys with
+    # "Function Runtimes must have a valid version").
+    for key, value in config.get("functions", {}).items():
+        assert "runtime" not in value, key
+    python_version = (
+        Path(__file__).resolve().parent.parent / ".python-version"
+    ).read_text(encoding="utf-8").strip()
+    assert python_version.startswith("3.")
