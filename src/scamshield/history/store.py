@@ -111,10 +111,15 @@ class HistoryStore:
             try:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 probe = sqlite3.connect(str(path))
-                probe.execute("SELECT 1")
-                probe.close()
-            except OSError as exc:
-                logger.warning("History DB %s not writable (%s); using memory.", path, exc)
+                try:
+                    probe.execute("SELECT 1")
+                finally:
+                    probe.close()
+            except (OSError, sqlite3.Error) as exc:
+                # A missing/unwritable/corrupt database must never take down
+                # the whole app (or silently kill history reads) — fall back
+                # to ephemeral memory and keep serving.
+                logger.warning("History DB %s unusable (%s); using memory.", path, exc)
                 self._connect = lambda: sqlite3.connect(":memory:")
                 self.persistent = False
             else:
