@@ -15,8 +15,15 @@ from __future__ import annotations
 import re
 from urllib.parse import parse_qsl, urlsplit
 
-import cv2
-import numpy as np
+try:  # OpenCV is optional: slim hosts (e.g. Vercel free tier) skip it.
+    import cv2
+    import numpy as np
+
+    _CV2_AVAILABLE = True
+except ImportError:  # pragma: no cover - exercised via no-cv2 simulation
+    cv2 = None  # type: ignore[assignment]
+    np = None  # type: ignore[assignment]
+    _CV2_AVAILABLE = False
 
 from ..analyzer import analyze_url
 from ..upi.analyzer import analyze_upi
@@ -30,6 +37,16 @@ NOT_OPENED_NOTE = (
     "The destination was NOT opened or visited. "
     "This verdict comes from static analysis of the link structure only."
 )
+
+QR_ENGINE_UNAVAILABLE = (
+    "QR image decoding is unavailable on this host "
+    "(OpenCV is not installed). URL, UPI, and text scans are unaffected."
+)
+
+
+def qr_engine_available() -> bool:
+    """True when image decoding is possible on this host."""
+    return _CV2_AVAILABLE
 
 _SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]{1,19}:")
 
@@ -73,8 +90,11 @@ def decode_qr_image(image_bytes: bytes) -> str | None:
 
     Returns the payload string, ``""`` if a QR symbol was found but is
     empty, or ``None`` when no QR code is detected. Raises ``ValueError``
-    when the bytes are not a decodable image.
+    when the bytes are not a decodable image, ``RuntimeError`` when the
+    QR engine is not installed on this host.
     """
+    if not _CV2_AVAILABLE:
+        raise RuntimeError(QR_ENGINE_UNAVAILABLE)
     if not image_bytes:
         raise ValueError("No image data supplied.")
     if len(image_bytes) > MAX_IMAGE_BYTES:

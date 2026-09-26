@@ -12,6 +12,10 @@ import qrcode
 from fastapi.testclient import TestClient
 from PIL import Image
 
+import pytest
+
+cv2 = pytest.importorskip("cv2", reason="QR decode tests need OpenCV")
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 

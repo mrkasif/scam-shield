@@ -261,6 +261,8 @@ async def smart_scan(request: Request) -> dict:
             envelope = smart_scan_qr(raw)
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except RuntimeError as exc:  # QR engine not installed on this host
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
         _remember(envelope)
         return envelope
     try:
@@ -323,6 +325,8 @@ async def analyze_qr(file: UploadFile = File(...)) -> dict:
         return analyze_qr_image(raw)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except RuntimeError as exc:  # QR engine not installed on this host
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 # Local convenience: serve the static frontend from the same process.

@@ -98,8 +98,10 @@ def test_malformed_qr_image_clean_error():
 
 def test_decompression_dimensions_capped():
     """A tiny file claiming huge dimensions must fail safely, not allocate."""
-    import cv2
-    import numpy as np
+    import pytest
+
+    cv2 = pytest.importorskip("cv2")
+    np = pytest.importorskip("numpy")
 
     tiny = np.zeros((2, 2, 3), dtype=np.uint8)
     ok, buf = cv2.imencode(".png", tiny)
