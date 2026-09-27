@@ -160,3 +160,23 @@ def test_existing_endpoints_regression():
         "/api/analyze/qr",
         files={"file": ("qr.png", make_qr_png("https://example.com"), "image/png")},
     ).status_code == 200
+
+
+def test_vercel_mode_is_memory_and_graceful(monkeypatch):
+    """On Vercel (VERCEL=1) the store must never touch the filesystem:
+    empty history, not a hard error."""
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.delenv("SCAMSHIELD_HISTORY_DB", raising=False)
+    store = HistoryStore("data/scamshield_history.db")
+    assert store.persistent is False
+    assert store.list() == []
+    stats = store.stats()
+    assert stats["total"] == 0
+    entry = store.record(
+        {"input_type": "url", "success": True,
+         "result": {"normalized_url": "https://example.com",
+                    "score": 0, "risk_level": "GREEN", "category": "benign",
+                    "suspicious": False}}
+    )
+    assert entry["id"]
+    assert store.stats()["total"] == 1
