@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-27T06:18:12+00:00",
+  "timestamp": "2026-09-27T06:46:27+00:00",
   "analyzer_version": "0.1.0",
   "metadata": {
     "evaluator_version": "1.0.0",
@@ -8,8 +8,6 @@
     "python_version": "3.14.6",
     "packages": {
       "fastapi": "0.141.1",
-      "opencv-python-headless": "5.0.0.93",
-      "numpy": "2.5.1",
       "httpx": "0.28.1",
       "qrcode": "8.2",
       "pillow": "12.3.0",
@@ -35,39 +33,39 @@
   },
   "summary": {
     "cases": 128,
-    "passed": 104,
-    "failed": 24
+    "passed": 98,
+    "failed": 30
   },
   "detection_metrics": {
-    "detection_rate": 0.5849056603773585,
-    "false_positive_rate": 0.02702702702702703,
-    "precision": 0.9393939393939394,
-    "recall": 0.5849056603773585,
-    "true_positives": 31,
-    "true_negatives": 72,
-    "false_positives": 2,
-    "false_negatives": 22,
+    "detection_rate": 0.5471698113207547,
+    "false_positive_rate": 0.06756756756756757,
+    "precision": 0.8529411764705882,
+    "recall": 0.5471698113207547,
+    "true_positives": 29,
+    "true_negatives": 69,
+    "false_positives": 5,
+    "false_negatives": 24,
     "positive_class": "expected SUSPICIOUS or HIGH_RISK"
   },
   "confusion_matrix": {
     "positive_class": "expected SUSPICIOUS or HIGH_RISK",
     "predicted_positive": "analyzer YELLOW or RED",
-    "true_positives": 31,
-    "false_negatives": 22,
-    "false_positives": 2,
-    "true_negatives": 72
+    "true_positives": 29,
+    "false_negatives": 24,
+    "false_positives": 5,
+    "true_negatives": 69
   },
   "risk_distribution": {
-    "GREEN": 93,
-    "YELLOW": 29,
+    "GREEN": 91,
+    "YELLOW": 27,
     "RED": 4,
-    "unscored": 2
+    "unscored": 6
   },
   "categories": {
     "benign": {
       "cases": 70,
-      "passed": 63,
-      "failed": 7
+      "passed": 62,
+      "failed": 8
     },
     "phishing_lure": {
       "cases": 8,
@@ -96,8 +94,8 @@
     },
     "brand_impersonation": {
       "cases": 21,
-      "passed": 13,
-      "failed": 8
+      "passed": 12,
+      "failed": 9
     },
     "suspicious_redirect": {
       "cases": 2,
@@ -106,8 +104,8 @@
     },
     "normal": {
       "cases": 5,
-      "passed": 5,
-      "failed": 0
+      "passed": 4,
+      "failed": 1
     },
     "invalid_payee": {
       "cases": 4,
@@ -116,8 +114,8 @@
     },
     "impersonation_scam": {
       "cases": 3,
-      "passed": 3,
-      "failed": 0
+      "passed": 2,
+      "failed": 1
     },
     "pressure_tactic": {
       "cases": 2,
@@ -136,13 +134,13 @@
     },
     "plain_text": {
       "cases": 1,
-      "passed": 1,
-      "failed": 0
+      "passed": 0,
+      "failed": 1
     },
     "decode_error": {
       "cases": 1,
-      "passed": 1,
-      "failed": 0
+      "passed": 0,
+      "failed": 1
     }
   },
   "failed_cases": [
@@ -319,6 +317,90 @@
         "bad_amount"
       ],
       "error": null
+    },
+    {
+      "id": "q01",
+      "name": "Benign URL QR",
+      "input_type": "qr_url",
+      "expected_class": "SAFE",
+      "actual_class": null,
+      "expected_category": "benign",
+      "actual_category": null,
+      "score": null,
+      "risk_level": null,
+      "reasons": [],
+      "detected_indicators": [],
+      "error": "UNEXPECTED RuntimeError: QR image decoding is unavailable on this host (OpenCV is not installed). URL, UPI, and text scans are unaffected."
+    },
+    {
+      "id": "q02",
+      "name": "Suspicious URL QR",
+      "input_type": "qr_url",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": null,
+      "expected_category": "brand_impersonation",
+      "actual_category": null,
+      "score": null,
+      "risk_level": null,
+      "reasons": [],
+      "detected_indicators": [],
+      "error": "UNEXPECTED RuntimeError: QR image decoding is unavailable on this host (OpenCV is not installed). URL, UPI, and text scans are unaffected."
+    },
+    {
+      "id": "q03",
+      "name": "Benign UPI QR",
+      "input_type": "qr_upi",
+      "expected_class": "SAFE",
+      "actual_class": null,
+      "expected_category": "normal",
+      "actual_category": null,
+      "score": null,
+      "risk_level": null,
+      "reasons": [],
+      "detected_indicators": [],
+      "error": "UNEXPECTED RuntimeError: QR image decoding is unavailable on this host (OpenCV is not installed). URL, UPI, and text scans are unaffected."
+    },
+    {
+      "id": "q04",
+      "name": "Suspicious UPI QR",
+      "input_type": "qr_upi",
+      "expected_class": "SUSPICIOUS",
+      "actual_class": null,
+      "expected_category": "impersonation_scam",
+      "actual_category": null,
+      "score": null,
+      "risk_level": null,
+      "reasons": [],
+      "detected_indicators": [],
+      "error": "UNEXPECTED RuntimeError: QR image decoding is unavailable on this host (OpenCV is not installed). URL, UPI, and text scans are unaffected."
+    },
+    {
+      "id": "q05",
+      "name": "Plain-text QR",
+      "input_type": "qr_text",
+      "expected_class": "SAFE",
+      "actual_class": null,
+      "expected_category": "plain_text",
+      "actual_category": null,
+      "score": null,
+      "risk_level": null,
+      "reasons": [],
+      "detected_indicators": [],
+      "error": "UNEXPECTED RuntimeError: QR image decoding is unavailable on this host (OpenCV is not installed). URL, UPI, and text scans are unaffected."
+    },
+    {
+      "id": "q06",
+      "name": "Unreadable QR image",
+      "input_type": "qr_bad",
+      "expected_class": "DECODE_ERROR",
+      "actual_class": null,
+      "expected_category": "decode_error",
+      "actual_category": null,
+      "score": null,
+      "risk_level": null,
+      "reasons": [],
+      "detected_indicators": [],
+      "error": "UNEXPECTED RuntimeError: QR image decoding is unavailable on this host (OpenCV is not installed). URL, UPI, and text scans are unaffected."
     },
     {
       "id": "t01",
@@ -608,7 +690,7 @@
     }
   ],
   "explainability": {
-    "with_explanations": 33,
+    "with_explanations": 31,
     "without_explanations": 0
   },
   "limitations": "Curated synthetic corpus (reserved .example domains, synthetic UPI handles); not a statistically representative measurement of real-world scam prevalence. Expectations encode current analyzer behavior; failures are reported as findings, never silently fixed."

@@ -896,7 +896,12 @@
         throw new Error("status request failed");
       }
       const data = await response.json();
-      const bad = data.scanner !== "ready" || data.qr_engine !== "ready";
+      // QR image decode is unavailable on slim hosts (e.g. Vercel free
+      // tier, where OpenCV exceeds the function size limit). That is a
+      // known, explicitly-reported degradation (tooltip + console readout
+      // + clean 503 on upload), not an outage: the pill stays green while
+      // the scanner itself is ready.
+      const bad = data.scanner !== "ready";
       statusEl.textContent = bad ? "Systems degraded" : "Systems ready";
       statusEl.title = [
         data.scanner === "ready" ? "Scanner ready" : "Scanner issue",

@@ -1,6 +1,6 @@
 # ScamShield Evaluation Report
 
-Generated: 2026-09-27T06:18:12+00:00 (UTC)
+Generated: 2026-09-27T06:46:27+00:00 (UTC)
 Analyzer version: 0.1.0
 Evaluator version: 1.0.0
 
@@ -41,11 +41,11 @@ Measure the current ScamShield static analyzers (URL, UPI, QR) against a curated
 
 ## 6. Overall metrics
 
-- Cases: 128, passed: 104, failed: 24
-- Detection rate: 58.5%
-- False-positive rate: 2.7%
-- Precision: 93.9%
-- Recall: 58.5%
+- Cases: 128, passed: 98, failed: 30
+- Detection rate: 54.7%
+- False-positive rate: 6.8%
+- Precision: 85.3%
+- Recall: 54.7%
 
 These four rates measure different things and are not interchangeable with a single 'accuracy' number:
 
@@ -57,27 +57,27 @@ These four rates measure different things and are not interchangeable with a sin
 ## 7. Confusion-matrix interpretation
 
 - Positive class: expected SUSPICIOUS or HIGH_RISK; predicted positive means analyzer YELLOW or RED.
-- True positives: 31 (planted threats flagged).
-- False negatives: 22 (planted threats missed).
-- False positives: 2 (benign cases flagged).
-- True negatives: 72 (benign cases left alone).
+- True positives: 29 (planted threats flagged).
+- False negatives: 24 (planted threats missed).
+- False positives: 5 (benign cases flagged).
+- True negatives: 69 (benign cases left alone).
 - TP + FN equals the planted-threat count; TN + FP equals the benign count; all four sum to the classified total.
 
 ## 8. Category-wise results
 
 Category | Cases | Passed | Failed
 ---|---|---|---
-benign | 70 | 63 | 7
-brand_impersonation | 21 | 13 | 8
+benign | 70 | 62 | 8
+brand_impersonation | 21 | 12 | 9
 credential_phishing | 1 | 1 | 0
-decode_error | 1 | 1 | 0
-impersonation_scam | 3 | 3 | 0
+decode_error | 1 | 0 | 1
+impersonation_scam | 3 | 2 | 1
 invalid_payee | 4 | 4 | 0
 ip_host | 5 | 5 | 0
 malware_delivery | 1 | 1 | 0
-normal | 5 | 5 | 0
+normal | 5 | 4 | 1
 phishing_lure | 8 | 3 | 5
-plain_text | 1 | 1 | 0
+plain_text | 1 | 0 | 1
 pressure_tactic | 2 | 1 | 1
 reward_lure | 2 | 2 | 0
 suspicious | 1 | 0 | 1
@@ -93,6 +93,27 @@ This table is descriptive only; categories are not ranked.
 - Score 31 (YELLOW) vs expected SAFE.
 - Triggering reasons: Hostname has 5 labels (many subdomains), often used to fake a trusted domain.; URL contains lure keywords (account, login, secure, verify) often used in phishing lures (fake login/verify/payment pages).
 - Indicators: excessive_subdomains, suspicious_keywords
+- Reading: legitimate-looking structure tripped keyword plus subdomain rules. Kept visible as a calibration finding; the detector was not weakened to hide it.
+
+### q01: Benign URL QR
+
+- Score None (None) vs expected SAFE.
+- Triggering reasons: —
+- Indicators: —
+- Reading: legitimate-looking structure tripped keyword plus subdomain rules. Kept visible as a calibration finding; the detector was not weakened to hide it.
+
+### q03: Benign UPI QR
+
+- Score None (None) vs expected SAFE.
+- Triggering reasons: —
+- Indicators: —
+- Reading: legitimate-looking structure tripped keyword plus subdomain rules. Kept visible as a calibration finding; the detector was not weakened to hide it.
+
+### q05: Plain-text QR
+
+- Score None (None) vs expected SAFE.
+- Triggering reasons: —
+- Indicators: —
 - Reading: legitimate-looking structure tripped keyword plus subdomain rules. Kept visible as a calibration finding; the detector was not weakened to hide it.
 
 ### a05: Secure store sign-in
@@ -158,6 +179,20 @@ This table is descriptive only; categories are not ranked.
 - Score 15 (GREEN) vs expected SUSPICIOUS.
 - Returned reasons: Amount '12abc' is not a valid positive number; odd amount formatting is used to confuse payers.
 - Indicators: bad_amount
+- Reading: a lone weak signal scores below the 30-point YELLOW threshold. The signal itself is detected and explained; only the zone boundary keeps it GREEN. Kept visible as a threshold calibration finding; the detector was not tuned to hide it.
+
+### q02: Suspicious URL QR
+
+- Score None (None) vs expected SUSPICIOUS.
+- Returned reasons: —
+- Indicators: —
+- Reading: a lone weak signal scores below the 30-point YELLOW threshold. The signal itself is detected and explained; only the zone boundary keeps it GREEN. Kept visible as a threshold calibration finding; the detector was not tuned to hide it.
+
+### q04: Suspicious UPI QR
+
+- Score None (None) vs expected SUSPICIOUS.
+- Returned reasons: —
+- Indicators: —
 - Reading: a lone weak signal scores below the 30-point YELLOW threshold. The signal itself is detected and explained; only the zone boundary keeps it GREEN. Kept visible as a threshold calibration finding; the detector was not tuned to hide it.
 
 ### t01: Amazon digit typosquat
@@ -258,9 +293,16 @@ This table is descriptive only; categories are not ranked.
 - Indicators: suspicious_keywords, brand_impersonation
 - Reading: a lone weak signal scores below the 30-point YELLOW threshold. The signal itself is detected and explained; only the zone boundary keeps it GREEN. Kept visible as a threshold calibration finding; the detector was not tuned to hide it.
 
+## Other failures (category mismatches or errors)
+
+### q06: Unreadable QR image
+
+- Expected DECODE_ERROR / decode_error; got None / None.
+- Error: UNEXPECTED RuntimeError: QR image decoding is unavailable on this host (OpenCV is not installed). URL, UPI, and text scans are unaffected.
+
 ## 11. Explainability verification
 
-- Threat predictions with explanations: 33
+- Threat predictions with explanations: 31
 - Threat predictions without explanations: 0
 - A threat prediction counts as explained only with at least one reason and one detected indicator.
 
@@ -288,8 +330,8 @@ $env:PYTHONPATH='src'; python -m evaluation
 
 or equivalently `python -m scamshield.evaluation`. This regenerates `evaluation/results.json` and `evaluation/report.md`, prints the headline metrics, and exits non-zero only if the evaluator itself errors (failed cases are findings, not tool failures). No network, no API keys, no production side effects: history, analyzers, and endpoints are untouched.
 
-Runtime metadata recorded in `results.json`: Python 3.14.6, packages {'fastapi': '0.141.1', 'opencv-python-headless': '5.0.0.93', 'numpy': '2.5.1', 'httpx': '0.28.1', 'qrcode': '8.2', 'pillow': '12.3.0', 'pytest': '9.1.1'}.
+Runtime metadata recorded in `results.json`: Python 3.14.6, packages {'fastapi': '0.141.1', 'httpx': '0.28.1', 'qrcode': '8.2', 'pillow': '12.3.0', 'pytest': '9.1.1'}.
 
 ## 16. Honest conclusion
 
-Across 128 synthetic cases, the current system flags 58.5% of planted threats at a 2.7% false-positive rate, with 93.9% precision and zero unexplained threat predictions. Residual risk concentrates in lone weak signals that score below the YELLOW threshold and in keyword-heavy legitimate subdomains — both documented above with case IDs. These numbers describe this curated corpus only and must not be read as real-world accuracy.
+Across 128 synthetic cases, the current system flags 54.7% of planted threats at a 6.8% false-positive rate, with 85.3% precision and zero unexplained threat predictions. Residual risk concentrates in lone weak signals that score below the YELLOW threshold and in keyword-heavy legitimate subdomains — both documented above with case IDs. These numbers describe this curated corpus only and must not be read as real-world accuracy.
