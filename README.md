@@ -6,6 +6,8 @@ content behind the link — and tells the user exactly why something looks
 dangerous. Built as an Aavishkar project: Python/FastAPI backend, static
 HTML/CSS/vanilla-JS frontend, deployable to Vercel, no paid services.
 
+**Live deployment:** https://scam-shield-7vet.vercel.app
+
 ## Problem
 
 In the Indian digital ecosystem, everyday users constantly face:
