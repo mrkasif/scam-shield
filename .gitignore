@@ -19,3 +19,6 @@ data/*.db
 Thumbs.db
 .vscode/
 .idea/
+
+# Personal presentation materials (PDFs, screenshots, banners) — local only
+progress/
